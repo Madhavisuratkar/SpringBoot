@@ -1,0 +1,42 @@
+package com.programmingtechie.inventory_service.serviceImpl;
+
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.programmingtechie.inventory_service.dto.InventoryResponse;
+import com.programmingtechie.inventory_service.repository.InventoryRepository;
+import com.programmingtechie.inventory_service.service.InventoryService;
+
+import lombok.extern.slf4j.Slf4j;
+
+
+@Service
+@Slf4j
+public class InventoryServiceImpl implements InventoryService{
+	
+	@Autowired
+	private InventoryRepository inventoryRepository;
+	
+	
+	@Transactional(readOnly = true)
+	@Override
+	public List<InventoryResponse> isInStock(List<String> skuCode) {
+		log.info("Wait Started");
+	    return inventoryRepository.findBySkuCodeIn(skuCode).stream()
+	        .map(inventory -> 
+	            InventoryResponse.builder()
+	                .skuCode(inventory.getSkuCode())           // Set SKU code
+	                .isInStock(inventory.getQuantity() > 0)    // Check if quantity is greater than 0
+	                .build()
+	        ).toList();
+	}
+
+				
+				
+				
+	
+}
